@@ -66,9 +66,9 @@ public class KGramWildcard {
                         index.put(gram, new HashSet<Integer>());
                     }
                     index.get(gram).add(wordId);
-                    sb.setLength(0);
                 }
             }
+            sb.setLength(0);
   
         }
     }

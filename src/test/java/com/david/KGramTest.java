@@ -30,7 +30,7 @@ public class KGramTest {
     public void testSingleChar() {
         String path = "./src/dataset/doc1.txt";
         String pattern = "*i*";
-        KGramWildcard kgramIndex = new KGramWildcard(path, 2);
+        KGramWildcard kgramIndex = new KGramWildcard(path, 1);
         Set<String> expected = new HashSet<>(Greedy.findMatches(kgramIndex.getWordsList(), pattern));
         Set<String> result = new HashSet<>(kgramIndex.findMatches(pattern));
         assertEquals(expected, result);
