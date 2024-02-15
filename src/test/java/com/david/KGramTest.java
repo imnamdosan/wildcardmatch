@@ -63,19 +63,19 @@ public class KGramTest {
 
         long startTime0 = System.nanoTime();
         KGramWildcard kgramIndex = new KGramWildcard(path, 2);
-        long constructionTime = (System.nanoTime() - startTime0) / 1000000;
+        long constructionTime = (System.nanoTime() - startTime0) / 1000;
 
         long startTime1 = System.nanoTime();
         Greedy.findMatches(kgramIndex.getWordsList(), pattern);
-        long greedyTime = (System.nanoTime() - startTime1) / 1000000;
+        long greedyTime = (System.nanoTime() - startTime1) / 1000;
 
         long startTime2 = System.nanoTime();
         kgramIndex.findMatches(pattern);
-        long kgramTime = (System.nanoTime() - startTime2) / 1000000;
+        long kgramTime = (System.nanoTime() - startTime2) / 1000;
         
-        LOGGER.info("Construction Time: " + constructionTime + " ms");
-        LOGGER.info("Greedy Time: " + greedyTime + " ms");
-        LOGGER.info("K-Gram Time: " + kgramTime + " ms");
+        LOGGER.info("Construction Time: " + constructionTime + " us");
+        LOGGER.info("Greedy Time: " + greedyTime + " us");
+        LOGGER.info("K-Gram Time: " + kgramTime + " us");
     }
 
     @Test
@@ -86,22 +86,22 @@ public class KGramTest {
         for (int k = pattern.length(); k > 0; k--) {
             long startTime0 = System.nanoTime();
             KGramWildcard kgramIndex = new KGramWildcard(path, k);
-            long constructionTime = (System.nanoTime() - startTime0) / 1000000;
+            long constructionTime = (System.nanoTime() - startTime0) / 1000;
 
             long startTime1 = System.nanoTime();
             kgramIndex.findMatches(pattern);
-            long kgramTime = (System.nanoTime() - startTime1) / 1000000;
+            long kgramTime = (System.nanoTime() - startTime1) / 1000;
 
             LOGGER.info("=== K = " + k + " ===");
-            LOGGER.info("Construction Time: " + constructionTime + " ms");
-            LOGGER.info("K-Gram Time: " + kgramTime + " ms " + '\n' );
+            LOGGER.info("Construction Time: " + constructionTime + " us");
+            LOGGER.info("K-Gram Time: " + kgramTime + " us " + '\n' );
         }
 
         long startTime2 = System.nanoTime();
         Greedy.findMatches(KGramWildcard.loadWords(path), pattern);
-        long greedyTime = (System.nanoTime() - startTime2) / 1000000;
+        long greedyTime = (System.nanoTime() - startTime2) / 1000;
 
-        LOGGER.info("Greedy Time: " + greedyTime + " ms");
+        LOGGER.info("Greedy Time: " + greedyTime + " us");
     }
 
 }
