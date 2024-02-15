@@ -75,9 +75,6 @@ public class KGramWildcard {
         String[] processedList = processPattern(pattern);
         List<String> patternKgrams = new ArrayList<>();
         for (String chunk : processedList) {
-            // is it necessary to call getKGrams on the pattern?
-            // obviously u need to do it for all the words in the text file 
-            // but why would u also need to do that for the pattern? 
             List<String> chunkKgrams = getKGrams(chunk, this.k);
             patternKgrams.addAll(chunkKgrams);
         }
