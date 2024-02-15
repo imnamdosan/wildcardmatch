@@ -1,33 +1,44 @@
 package com.david;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
 
-import org.junit.Test;
 
 public class Benchmark {
+
     private static void testSpeed(String path, String pattern, PrintWriter csvLog, int repeat, boolean verbose){
         long totalConstructTime = 0, totalGreedyTime = 0, totalKGramTime = 0;
 
         for (int r = 0; r < repeat; r++){
+            if (verbose) System.out.println("Repeat: " + r);
+
             long startTime0 = System.nanoTime();
             KGramWildcard kgramIndex = new KGramWildcard(path, 2);
-            totalConstructTime += (System.nanoTime() - startTime0) / 1000;
+            long currConstructTime = (System.nanoTime() - startTime0) / 1000;
+            totalConstructTime += currConstructTime;
     
             long startTime1 = System.nanoTime();
             Set<String> greedyResult = new HashSet<>(Greedy.findMatches(kgramIndex.getWordsList(), pattern));
-            totalGreedyTime += (System.nanoTime() - startTime1) / 1000;
+            long currGreedyTime = (System.nanoTime() - startTime1) / 1000;
+            totalGreedyTime += currGreedyTime;
     
             long startTime2 = System.nanoTime();
             Set<String> kgramResult = new HashSet<>(kgramIndex.findMatches(pattern));
-            totalKGramTime += (System.nanoTime() - startTime2) / 1000;
+            long currKGramTime = (System.nanoTime() - startTime2) / 1000;
+            totalKGramTime += currKGramTime;
 
             // verify: compare kgram query with bruteforce 
             if (!greedyResult.equals(kgramResult)){
                 throw new RuntimeException("bug: kgram result is wrong");
+            }
+            
+            if (verbose){
+                System.out.println("Construction Time: " + currConstructTime + " us");
+                System.out.println("Greedy Time: " + currGreedyTime + " us");
+                System.out.println("KGram Time: " + currKGramTime + " us");
+                System.out.println("=======================");
             }
         }
 
@@ -44,38 +55,61 @@ public class Benchmark {
         csvLog.flush();
     }
 
-    @Test
-    public void testKValues() {
-        String path = "./src/dataset/400k_corpus.txt";
-        String pattern = "guarantee*";
+    public static void testKValues(String path, String pattern, int repeats, boolean verbose) {
+        int n = pattern.length();
+        long[] totalKTimes = new long[n + 1];
+        long totalGreedyTime = 0, totalConstructTime = 0;
 
-        for (int k = pattern.length(); k > 0; k--) {
-            long startTime0 = System.nanoTime();
-            KGramWildcard kgramIndex = new KGramWildcard(path, k);
-            long constructionTime = (System.nanoTime() - startTime0) / 1000;
+        for (int r = 0; r < repeats; r++){
+            if (verbose) System.out.println("Repeat: " + r);
 
-            long startTime1 = System.nanoTime();
-            kgramIndex.findMatches(pattern);
-            long kgramTime = (System.nanoTime() - startTime1) / 1000;
+            for (int k = n; k > 0; k--) {
+                long startTime0 = System.nanoTime();
+                KGramWildcard kgramIndex = new KGramWildcard(path, k);
+                totalConstructTime += (System.nanoTime() - startTime0) / 1000;
+    
+                long startTime1 = System.nanoTime();
+                kgramIndex.findMatches(pattern);
+                long kgramTime = (System.nanoTime() - startTime1) / 1000;
+                totalKTimes[k] += kgramTime;
 
-            System.out.println("=== K: " + k + " ===");
-            System.out.println("Construction Time: " + constructionTime + " us");
-            System.out.println("K-Gram Time: " + kgramTime + " us " + '\n' );
-            
+                if (verbose) System.out.println("K: " + k + " Time: " + kgramTime + " us");
+            }
+    
+            long startTime2 = System.nanoTime();
+            Greedy.findMatches(KGramWildcard.loadWords(path), pattern);
+            totalGreedyTime += (System.nanoTime() - startTime2) / 1000;
+
+            if (verbose) System.out.println("=======================");
         }
 
-        long startTime2 = System.nanoTime();
-        Greedy.findMatches(KGramWildcard.loadWords(path), pattern);
-        long greedyTime = (System.nanoTime() - startTime2) / 1000;
+        int bestKVal = n;
+        for (int k = n; k > 0; k--){
+            if (totalKTimes[k] < totalKTimes[bestKVal]){
+                bestKVal = k;
+            }
 
-        System.out.println("Greedy Time: " + greedyTime + " us");
+            long kgramTime = totalKTimes[k] / repeats;
+            System.out.println("=== K: " + k + " ===");
+            System.out.println("K-Gram Time: " + kgramTime + " us " + '\n' );
+        }
+
+        long greedyTime = totalGreedyTime / repeats;
+        long constructTime = totalConstructTime / repeats; 
+
+        System.out.println("===== FINAL RESULTS =====");
+        System.out.println("Construction Time: " + constructTime + " us");
+        System.out.println("Best K Val: " + bestKVal + " Time: " + totalKTimes[bestKVal]/repeats + " us");
+        System.out.println("Greedy Time: " + greedyTime + " us\n");
+
     }
 
 
     public static void test(PrintWriter csvLog, int repeat){
         csvLog.format("\"Pattern\",\"Construction Time\",\"K-Gram Time (us)\",\"Greedy Time (us)\"\n");
         String path = "./src/dataset/400k_corpus.txt";
-        testSpeed(path, "guarantee*", csvLog, repeat, true);
+        // testSpeed(path, "guarantee*", csvLog, repeat, true);
+        testKValues(path, "guarantee*", repeat, true);
     }   
 
     public static void main(String[] args) throws FileNotFoundException {
@@ -85,7 +119,6 @@ public class Benchmark {
         PrintWriter writer = null;
 
         try {
-
             String fileName = String.format(
                 "benchmark-%1$tY%1$tm%1$tdT%1$tH%1$tM%1$tS.csv",
                 System.currentTimeMillis());
