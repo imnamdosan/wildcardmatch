@@ -54,13 +54,10 @@ public class KGramWildcard {
     }
 
     private void createIndex() {
-        StringBuilder sb = new StringBuilder();
         for (int wordId = 0; wordId < wordsList.size(); wordId++) {
             String word = wordsList.get(wordId);
-            sb.append("$"); sb.append(word); sb.append("$");
-
             for (int i = 1; i <= this.k; i++){
-                List<String> kgrams = getKGrams(sb.toString(), i);
+                List<String> kgrams = getKGrams(word, i);
                 for (String gram : kgrams) {
                     if (!index.containsKey(gram)) {
                         index.put(gram, new HashSet<Integer>());
@@ -68,7 +65,6 @@ public class KGramWildcard {
                     index.get(gram).add(wordId);
                 }
             }
-            sb.setLength(0);
   
         }
     }
@@ -109,14 +105,7 @@ public class KGramWildcard {
     }
 
     private String[] processPattern(String pattern) {
-        String processedString = pattern; 
-        if (pattern.charAt(0) != '*') {
-            processedString = "$" + processedString;
-        }
-        if (pattern.charAt(pattern.length() - 1) != '*') {
-            processedString = processedString + "$";
-        }
-        String[] processed = processedString.split("\\*");
+        String[] processed = pattern.split("\\*");
         return processed;
     }
 
