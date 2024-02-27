@@ -11,11 +11,11 @@ public class Benchmark {
     private static void testSpeed(String path, String pattern, PrintWriter csvLog, int repeat, boolean verbose){
         long totalConstructTime = 0, totalGreedyTime = 0, totalKGramTime = 0;
 
-        for (int r = 0; r < repeat; r++){
+        for (int r = 1; r <= repeat; r++){
             if (verbose) System.out.println("Repeat: " + r);
 
             long startTime0 = System.nanoTime();
-            KGramWildcard kgramIndex = new KGramWildcard(path, KGramWildcard.getK(pattern));
+            KGramWildcard kgramIndex = new KGramWildcard(path, KGramWildcard.getLongestPatternSubstring(pattern));
             long currConstructTime = (System.nanoTime() - startTime0) / 1000;
             totalConstructTime += currConstructTime;
     
@@ -55,67 +55,67 @@ public class Benchmark {
         csvLog.flush();
     }
 
-    public static void testKValues(String path, String pattern, int repeats, boolean verbose) {
-        int n = KGramWildcard.getK(pattern);
-        long[] totalKTimes = new long[n + 1];
-        long totalGreedyTime = 0, totalConstructTime = 0;
+    // public static void testKValues(String path, String pattern, int repeats, boolean verbose) {
+    //     int n = KGramWildcard.getLongestPatternSubstring(pattern);
+    //     long[] totalKTimes = new long[n + 1];
+    //     long totalGreedyTime = 0, totalConstructTime = 0;
 
-        for (int r = 0; r < repeats; r++){
-            if (verbose) System.out.println("Repeat: " + r);
+    //     for (int r = 0; r < repeats; r++){
+    //         if (verbose) System.out.println("Repeat: " + r);
 
-            for (int k = n; k > 0; k--) {
-                long startTime0 = System.nanoTime();
-                KGramWildcard kgramIndex = new KGramWildcard(path, k);
-                totalConstructTime += (System.nanoTime() - startTime0) / 1000;
+    //         for (int k = n; k > 0; k--) {
+    //             long startTime0 = System.nanoTime();
+    //             KGramWildcard kgramIndex = new KGramWildcard(path, k);
+    //             totalConstructTime += (System.nanoTime() - startTime0) / 1000;
     
-                long startTime1 = System.nanoTime();
-                Set<String> kgramResult = new HashSet<>(kgramIndex.findMatches(pattern));
-                long kgramTime = (System.nanoTime() - startTime1) / 1000;
-                totalKTimes[k] += kgramTime;
+    //             long startTime1 = System.nanoTime();
+    //             Set<String> kgramResult = new HashSet<>(kgramIndex.findMatches(pattern));
+    //             long kgramTime = (System.nanoTime() - startTime1) / 1000;
+    //             totalKTimes[k] += kgramTime;
 
                 
-                Set<String> greedyResult = new HashSet<>(Greedy.findMatches(kgramIndex.getWordsList(), pattern));
-                if (!greedyResult.equals(kgramResult)){
-                    throw new RuntimeException("bug: kgram result is wrong");
-                }
+    //             Set<String> greedyResult = new HashSet<>(Greedy.findMatches(kgramIndex.getWordsList(), pattern));
+    //             if (!greedyResult.equals(kgramResult)){
+    //                 throw new RuntimeException("bug: kgram result is wrong");
+    //             }
 
-                if (verbose) System.out.println("K: " + k + " Time: " + kgramTime + " us");
-            }
+    //             if (verbose) System.out.println("K: " + k + " Time: " + kgramTime + " us");
+    //         }
     
-            long startTime2 = System.nanoTime();
-            Greedy.findMatches(KGramWildcard.loadWords(path), pattern);
-            totalGreedyTime += (System.nanoTime() - startTime2) / 1000;
+    //         long startTime2 = System.nanoTime();
+    //         Greedy.findMatches(KGramWildcard.loadWords(path), pattern);
+    //         totalGreedyTime += (System.nanoTime() - startTime2) / 1000;
 
-            if (verbose) System.out.println("=======================");
-        }
+    //         if (verbose) System.out.println("=======================");
+    //     }
 
-        int bestKVal = n;
-        for (int k = n; k > 0; k--){
-            if (totalKTimes[k] < totalKTimes[bestKVal]){
-                bestKVal = k;
-            }
+    //     int bestKVal = n;
+    //     for (int k = n; k > 0; k--){
+    //         if (totalKTimes[k] < totalKTimes[bestKVal]){
+    //             bestKVal = k;
+    //         }
 
-            long kgramTime = totalKTimes[k] / repeats;
-            System.out.println("=== K: " + k + " ===");
-            System.out.println("K-Gram Time: " + kgramTime + " us " + '\n' );
-        }
+    //         long kgramTime = totalKTimes[k] / repeats;
+    //         System.out.println("=== K: " + k + " ===");
+    //         System.out.println("K-Gram Time: " + kgramTime + " us " + '\n' );
+    //     }
 
-        long greedyTime = totalGreedyTime / repeats;
-        long constructTime = totalConstructTime / repeats; 
+    //     long greedyTime = totalGreedyTime / repeats;
+    //     long constructTime = totalConstructTime / repeats; 
 
-        System.out.println("===== FINAL RESULTS =====");
-        System.out.println("Construction Time: " + constructTime + " us");
-        System.out.println("Best K Val: " + bestKVal + " Time: " + totalKTimes[bestKVal]/repeats + " us");
-        System.out.println("Greedy Time: " + greedyTime + " us\n");
+    //     System.out.println("===== FINAL RESULTS =====");
+    //     System.out.println("Construction Time: " + constructTime + " us");
+    //     System.out.println("Best K Val: " + bestKVal + " Time: " + totalKTimes[bestKVal]/repeats + " us");
+    //     System.out.println("Greedy Time: " + greedyTime + " us\n");
 
-    }
+    // }
 
 
     public static void test(PrintWriter csvLog, int repeat){
         csvLog.format("\"Pattern\",\"Construction Time\",\"K-Gram Time (us)\",\"Greedy Time (us)\"\n");
         String path = "./src/dataset/400k_corpus.txt";
-        // testSpeed(path, "guarantee*", csvLog, repeat, true);
-        testKValues(path, "guarantee*", repeat, true);
+        testSpeed(path, "guarantee*", csvLog, repeat, true);
+        // testKValues(path, "guarantee*", repeat, true);
     }   
 
     public static void main(String[] args) throws FileNotFoundException {

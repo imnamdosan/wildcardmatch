@@ -152,13 +152,13 @@ public class KGramWildcard {
         return true;
     }
 
-    public static int getK(String pattern){
+    public static int getLongestPatternSubstring(String pattern){
         String[] processedList = processPattern(pattern);
-        int minChunkLen = Integer.MAX_VALUE;
+        int maxChunkLen = 1;
         for (String chunk : processedList) {
-            minChunkLen = Math.min(minChunkLen, chunk.length());
+            maxChunkLen = Math.max(maxChunkLen, chunk.length());
         }
-        return minChunkLen;
+        return maxChunkLen;
     }
 
     public static void main(String[] args) {
