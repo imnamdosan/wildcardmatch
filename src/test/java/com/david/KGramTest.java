@@ -20,7 +20,7 @@ public class KGramTest {
     public void testCatDog() {
         String path = "./src/dataset/doc3.txt";
         String pattern = "*cat*dog*";
-        KGramWildcard kgramIndex = new KGramWildcard(path, 2);
+        KGramWildcard kgramIndex = new KGramWildcard(path, KGramWildcard.getK(pattern));
         Set<String> expected = new HashSet<>(Greedy.findMatches(kgramIndex.getWordsList(), pattern));
         Set<String> result = new HashSet<>(kgramIndex.findMatches(pattern));
         assertEquals(expected, result);
@@ -30,7 +30,7 @@ public class KGramTest {
     public void testSingleChar() {
         String path = "./src/dataset/doc1.txt";
         String pattern = "*i*";
-        KGramWildcard kgramIndex = new KGramWildcard(path, 1);
+        KGramWildcard kgramIndex = new KGramWildcard(path, KGramWildcard.getK(pattern));
         Set<String> expected = new HashSet<>(Greedy.findMatches(kgramIndex.getWordsList(), pattern));
         Set<String> result = new HashSet<>(kgramIndex.findMatches(pattern));
         assertEquals(expected, result);
@@ -40,7 +40,7 @@ public class KGramTest {
     public void testFalsePositive() {
         String path = "./src/dataset/doc2.txt";
         String pattern = "gol*";
-        KGramWildcard kgramIndex = new KGramWildcard(path, 2);
+        KGramWildcard kgramIndex = new KGramWildcard(path, KGramWildcard.getK(pattern));
         Set<String> expected = new HashSet<>(Greedy.findMatches(kgramIndex.getWordsList(), pattern));
         Set<String> result = new HashSet<>(kgramIndex.findMatches(pattern));
         assertEquals(expected, result);
@@ -50,7 +50,7 @@ public class KGramTest {
     public void testCorpus() {
         String path = "./src/dataset/400k_corpus.txt";
         String pattern = "*he*";
-        KGramWildcard kgramIndex = new KGramWildcard(path, 2);
+        KGramWildcard kgramIndex = new KGramWildcard(path, KGramWildcard.getK(pattern));
         Set<String> expected = new HashSet<>(Greedy.findMatches(kgramIndex.getWordsList(), pattern));
         Set<String> result = new HashSet<>(kgramIndex.findMatches(pattern));
         assertEquals(expected, result);

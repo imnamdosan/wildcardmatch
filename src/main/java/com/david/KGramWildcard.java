@@ -75,7 +75,7 @@ public class KGramWildcard {
         String[] processedList = processPattern(pattern);
         List<String> patternKgrams = new ArrayList<>();
         for (String chunk : processedList) {
-            List<String> chunkKgrams = getKGrams(chunk, this.k);
+            List<String> chunkKgrams = getKGrams(chunk, chunk.length());
             patternKgrams.addAll(chunkKgrams);
         }
         
@@ -101,7 +101,7 @@ public class KGramWildcard {
         return intersect.isEmpty() ? null : intersect;
     }
 
-    private String[] processPattern(String pattern) {
+    private static String[] processPattern(String pattern) {
         String[] processed = pattern.split("\\*");
         return processed;
     }
@@ -150,6 +150,15 @@ public class KGramWildcard {
         }
 
         return true;
+    }
+
+    public static int getK(String pattern){
+        String[] processedList = processPattern(pattern);
+        int minChunkLen = Integer.MAX_VALUE;
+        for (String chunk : processedList) {
+            minChunkLen = Math.min(minChunkLen, chunk.length());
+        }
+        return minChunkLen;
     }
 
     public static void main(String[] args) {

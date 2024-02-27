@@ -15,7 +15,7 @@ public class Benchmark {
             if (verbose) System.out.println("Repeat: " + r);
 
             long startTime0 = System.nanoTime();
-            KGramWildcard kgramIndex = new KGramWildcard(path, 2);
+            KGramWildcard kgramIndex = new KGramWildcard(path, KGramWildcard.getK(pattern));
             long currConstructTime = (System.nanoTime() - startTime0) / 1000;
             totalConstructTime += currConstructTime;
     
@@ -56,7 +56,7 @@ public class Benchmark {
     }
 
     public static void testKValues(String path, String pattern, int repeats, boolean verbose) {
-        int n = pattern.length();
+        int n = KGramWildcard.getK(pattern);
         long[] totalKTimes = new long[n + 1];
         long totalGreedyTime = 0, totalConstructTime = 0;
 
@@ -69,9 +69,15 @@ public class Benchmark {
                 totalConstructTime += (System.nanoTime() - startTime0) / 1000;
     
                 long startTime1 = System.nanoTime();
-                kgramIndex.findMatches(pattern);
+                Set<String> kgramResult = new HashSet<>(kgramIndex.findMatches(pattern));
                 long kgramTime = (System.nanoTime() - startTime1) / 1000;
                 totalKTimes[k] += kgramTime;
+
+                
+                Set<String> greedyResult = new HashSet<>(Greedy.findMatches(kgramIndex.getWordsList(), pattern));
+                if (!greedyResult.equals(kgramResult)){
+                    throw new RuntimeException("bug: kgram result is wrong");
+                }
 
                 if (verbose) System.out.println("K: " + k + " Time: " + kgramTime + " us");
             }
