@@ -73,13 +73,13 @@ public class KGramWildcard {
         List<Set<Integer>> kgramSets = new ArrayList<>();
 
         String[] processedList = processPattern(pattern);
-        List<String> patternKgrams = new ArrayList<>();
-        for (String chunk : processedList) {
-            List<String> chunkKgrams = getKGrams(chunk, chunk.length());
-            patternKgrams.addAll(chunkKgrams);
-        }
+        // List<String> patternKgrams = new ArrayList<>();
+        // for (String chunk : processedList) {
+        //     List<String> chunkKgrams = getKGrams(chunk, chunk.length());
+        //     patternKgrams.addAll(chunkKgrams);
+        // }
         
-        for (String gram : patternKgrams) {
+        for (String gram : processedList) {
             if (index.containsKey(gram)) {
                 kgramSets.add(index.get(gram));
             }
