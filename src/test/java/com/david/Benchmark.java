@@ -15,7 +15,7 @@ public class Benchmark {
             if (verbose) System.out.println("Repeat: " + r);
 
             long startTime0 = System.nanoTime();
-            KGramWildcard kgramIndex = new KGramWildcard(path, KGramWildcard.getLongestPatternSubstring(pattern));
+            KGramWildcard kgramIndex = new KGramWildcard(path, 3);
             long currConstructTime = (System.nanoTime() - startTime0) / 1000;
             totalConstructTime += currConstructTime;
     
@@ -47,6 +47,7 @@ public class Benchmark {
         long greedyTime = totalGreedyTime/repeat;
 
         if (verbose){
+            System.out.println("===== FINAL RESULTS ====");
             System.out.println("Construction Time: " + constructTime + " us");
             System.out.println("K-Gram Time: " +  kgramTime + " us");
             System.out.println("Greedy Time: " + greedyTime + " us");

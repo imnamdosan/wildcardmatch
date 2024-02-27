@@ -37,6 +37,8 @@ public class KGramWildcard {
         return kgrams;
     }
 
+
+
     public static List<String> loadWords(String path) {
         List<String> validWords = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
@@ -65,7 +67,6 @@ public class KGramWildcard {
                     index.get(gram).add(wordId);
                 }
             }
-  
         }
     }
 
@@ -73,13 +74,14 @@ public class KGramWildcard {
         List<Set<Integer>> kgramSets = new ArrayList<>();
 
         String[] processedList = processPattern(pattern);
-        // List<String> patternKgrams = new ArrayList<>();
-        // for (String chunk : processedList) {
-        //     List<String> chunkKgrams = getKGrams(chunk, chunk.length());
-        //     patternKgrams.addAll(chunkKgrams);
-        // }
+        List<String> patternKgrams = new ArrayList<>();
+
+        for (String chunk : processedList) {
+            List<String> chunkKgrams = getKGrams(chunk, Math.min(chunk.length(), this.k));
+            patternKgrams.addAll(chunkKgrams);
+        }
         
-        for (String gram : processedList) {
+        for (String gram : patternKgrams) {
             if (index.containsKey(gram)) {
                 kgramSets.add(index.get(gram));
             }
@@ -150,15 +152,6 @@ public class KGramWildcard {
         }
 
         return true;
-    }
-
-    public static int getLongestPatternSubstring(String pattern){
-        String[] processedList = processPattern(pattern);
-        int maxChunkLen = 1;
-        for (String chunk : processedList) {
-            maxChunkLen = Math.max(maxChunkLen, chunk.length());
-        }
-        return maxChunkLen;
     }
 
     public static void main(String[] args) {
