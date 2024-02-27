@@ -15,7 +15,7 @@ public class Benchmark {
             if (verbose) System.out.println("Repeat: " + r);
 
             long startTime0 = System.nanoTime();
-            KGramWildcard kgramIndex = new KGramWildcard(path, 3);
+            KGramWildcard kgramIndex = new KGramWildcard(path, 5);
             long currConstructTime = (System.nanoTime() - startTime0) / 1000;
             totalConstructTime += currConstructTime;
     

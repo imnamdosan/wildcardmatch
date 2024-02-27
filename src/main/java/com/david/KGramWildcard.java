@@ -78,15 +78,22 @@ public class KGramWildcard {
 
         for (String chunk : processedList) {
             int gramSize = Math.min(chunk.length(), this.k);
-            List<String> chunkKgrams = getKGrams(chunk, gramSize, Math.max(gramSize - 1, 1)); // if gramsize = 1, stride will be 0 
+            List<String> chunkKgrams = getKGrams(chunk, gramSize, 1); // if gramsize = 1, stride will be 0 
             patternKgrams.addAll(chunkKgrams);
         }
-        
+
         for (String gram : patternKgrams) {
             if (index.containsKey(gram)) {
                 kgramSets.add(index.get(gram));
             }
         }
+
+
+        // for (String chunk : processedList) {
+        //     if (index.containsKey(chunk)) {
+        //         kgramSets.add(index.get(chunk));
+        //     }
+        // }
 
         Set<Integer> candidates = intersectSets(kgramSets);
         return postFilter(candidates, pattern);
