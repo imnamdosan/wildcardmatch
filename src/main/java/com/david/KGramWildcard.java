@@ -27,10 +27,10 @@ public class KGramWildcard {
         createIndex();
     }
 
-    private List<String> getKGrams(String word, int k) {
+    private List<String> getKGrams(String word, int k, int stride) {
         List<String> kgrams = new ArrayList<>();
 
-        for (int i = 0; i <= word.length() - k; i++) {
+        for (int i = 0; i <= word.length() - k; i += stride) {
             kgrams.add(word.substring(i, i + k));
         }
         
@@ -59,7 +59,7 @@ public class KGramWildcard {
         for (int wordId = 0; wordId < wordsList.size(); wordId++) {
             String word = wordsList.get(wordId);
             for (int i = 1; i <= this.k; i++){
-                List<String> kgrams = getKGrams(word, i);
+                List<String> kgrams = getKGrams(word, i, 1);
                 for (String gram : kgrams) {
                     if (!index.containsKey(gram)) {
                         index.put(gram, new HashSet<Integer>());
@@ -77,7 +77,8 @@ public class KGramWildcard {
         List<String> patternKgrams = new ArrayList<>();
 
         for (String chunk : processedList) {
-            List<String> chunkKgrams = getKGrams(chunk, Math.min(chunk.length(), this.k));
+            int gramSize = Math.min(chunk.length(), this.k);
+            List<String> chunkKgrams = getKGrams(chunk, gramSize, Math.max(gramSize - 1, 1)); // if gramsize = 1, stride will be 0 
             patternKgrams.addAll(chunkKgrams);
         }
         
