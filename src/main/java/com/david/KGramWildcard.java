@@ -78,7 +78,7 @@ public class KGramWildcard {
 
         for (String chunk : processedList) {
             int gramSize = Math.min(chunk.length(), this.k);
-            List<String> chunkKgrams = getKGrams(chunk, gramSize, 1); // if gramsize = 1, stride will be 0 
+            List<String> chunkKgrams = getKGrams(chunk, gramSize, Math.max(1, gramSize - 1)); // if gramsize = 1, stride will be 0 
             patternKgrams.addAll(chunkKgrams);
         }
 
